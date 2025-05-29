@@ -1,0 +1,6 @@
+env/
+hammy/
+__pycache__/
+*.pyc
+*.db
+.env
