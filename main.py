@@ -1,7 +1,14 @@
+from dotenv import load_dotenv
+import os
+
+# Load environment variables FIRST, before other imports
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import database
 from routers.questions import router as questions_router
+from routers.email_test import router as email_router
 
 app = FastAPI()
 
@@ -14,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(questions_router)
+app.include_router(email_router)
 
 @app.on_event("startup")
 async def startup():
