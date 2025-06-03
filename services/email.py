@@ -1,17 +1,20 @@
-import os
-from resend import Resend
+from fastapi import APIRouter, Request, HTTPException
+import resend, os
 
-RESEND_API_KEY = os.getenv("RESEND_API_KEY")
-RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL")
+router = APIRouter(prefix="/email")
 
-resend = Resend(api_key=RESEND_API_KEY)
+resend.api_key = os.getenv("RESEND_API_KEY")
 
-async def send_email(to_email: str, subject: str, html_content: str):
-    params = {
-        "from": RESEND_FROM_EMAIL,
-        "to": to_email,
-        "subject": subject,
-        "html": html_content,
-    }
-    response = resend.emails.send(params)
-    return response
+@router.post("/send")
+async def send_email(request: Request):
+    data = await request.json()
+    try:
+        resend.Emails.send({
+            "from": os.getenv("RESEND_FROM_EMAIL"),
+            "to": os.getenv("RESEND_FROM_EMAIL"),
+            "subject": data["subject"],
+            "text": f"{data['name']} ({data['email']}): {data['message']}"
+        })
+        return {"status": "sent"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
