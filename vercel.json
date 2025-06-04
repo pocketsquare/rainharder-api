@@ -4,5 +4,15 @@
       "src": "api/email.py",
       "use": "@vercel/python"
     }
+  ],
+  "headers": [
+    {
+      "source": "/api/email/send",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "https://www.rainharder.com" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
   ]
 }

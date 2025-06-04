@@ -54,7 +54,7 @@ app = FastAPI()
 app.include_router(router)
 
 # Configure CORS dynamically
-origins = os.getenv("CORS_ORIGINS", "https://www.rainharder.com,https://rainharder.com").split(",")
+origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://rainharder.com,https://www.rainharder.com").split(",")
 logger.debug(f"Allowed CORS origins: {origins}")
 app.add_middleware(
     CORSMiddleware,
