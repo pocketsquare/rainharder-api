@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Request, HTTPException, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import resend
 import logging
 import os
 from mangum import Mangum
+from dotenv import load_dotenv  # Add this
+
+# Load environment variables from .env file
+load_dotenv()
 
 router = APIRouter()
 
@@ -45,9 +50,18 @@ async def send_email(request: Request):
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# Create FastAPI app and include router
 app = FastAPI()
 app.include_router(router)
 
-# Add Mangum handler for Vercel serverless
+# Configure CORS dynamically
+origins = os.getenv("CORS_ORIGINS", "https://rainharder.com").split(",")
+logger.debug(f"Allowed CORS origins: {origins}")  # Add this to debug
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 handler = Mangum(app)
