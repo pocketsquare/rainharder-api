@@ -54,8 +54,8 @@ app = FastAPI()
 app.include_router(router)
 
 # Configure CORS dynamically
-origins = os.getenv("CORS_ORIGINS", "https://rainharder.com").split(",")
-logger.debug(f"Allowed CORS origins: {origins}")  # Add this to debug
+origins = os.getenv("CORS_ORIGINS", "https://www.rainharder.com,https://rainharder.com").split(",")
+logger.debug(f"Allowed CORS origins: {origins}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
