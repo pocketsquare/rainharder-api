@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, FastAPI
 import resend
 import logging
 import os
+from mangum import Mangum
 
 router = APIRouter()
 
@@ -43,3 +44,10 @@ async def send_email(request: Request):
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Create FastAPI app and include router
+app = FastAPI()
+app.include_router(router)
+
+# Add Mangum handler for Vercel serverless
+handler = Mangum(app)

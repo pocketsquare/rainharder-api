@@ -1,0 +1,8 @@
+{
+  "builds": [
+    {
+      "src": "api/email.py",
+      "use": "@vercel/python"
+    }
+  ]
+}
