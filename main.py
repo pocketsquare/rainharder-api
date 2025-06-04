@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from routers import email
+from api import email
 from dotenv import load_dotenv
 import sqlite3
 import os
@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://rainharder.com"],
+    allow_origins=["http://localhost:5173", "https://rainharder.com", "https://www.rainharder.com"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
