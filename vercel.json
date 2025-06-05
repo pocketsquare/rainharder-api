@@ -3,15 +3,11 @@
     { "src": "Dockerfile", "use": "@vercel/docker" }
   ],
   "routes": [
-    { "src": "/docs", "dest": "/api/index.py" },
-    { "src": "/openapi.json", "dest": "/api/index.py" },
-    { "src": "/email/(.*)", "dest": "/api/index.py" },
-    { "src": "/questions/(.*)", "dest": "/api/index.py" },
-    { "src": "/(.*)", "dest": "/api/index.py" }
+    { "src": "/(.*)", "dest": "/" }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "https://www.rainharder.com" },
         { "key": "Access-Control-Allow-Methods", "value": "POST, GET, OPTIONS" },
