@@ -5,7 +5,7 @@ import logging
 import os
 from mangum import Mangum
 from dotenv import load_dotenv
-from api.database import database
+# from api.database import database
 
 # Load environment variables from .env file
 load_dotenv()
