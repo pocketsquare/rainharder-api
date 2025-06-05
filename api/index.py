@@ -5,6 +5,7 @@ import logging
 import os
 from mangum import Mangum
 from dotenv import load_dotenv
+from api.database import database
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Email endpoint
 @app.post("/email/send")
 async def send_email(request: Request):
     try:
@@ -60,5 +62,26 @@ async def send_email(request: Request):
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Questions endpoint
+@app.get("/questions/{question_id}")
+async def get_question(question_id: int):
+    query = "SELECT * FROM questions WHERE id = :id"
+    question = await database.fetch_one(query, {"id": question_id})
+    if question is None:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    left_entries_query = "SELECT * FROM left_entries WHERE question_id = :question_id"
+    right_entries_query = "SELECT * FROM right_entries WHERE question_id = :question_id"
+
+    left_entries = await database.fetch_all(left_entries_query, {"question_id": question_id})
+    right_entries = await database.fetch_all(right_entries_query, {"question_id": question_id})
+
+    return {
+        "id": question["id"],
+        "prompt": question["prompt"],
+        "left_entries": [dict(le) for le in left_entries],
+        "right_entries": [dict(re) for re in right_entries],
+    }
 
 handler = Mangum(app)

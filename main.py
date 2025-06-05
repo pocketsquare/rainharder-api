@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from api import email
+from archive import email
 from dotenv import load_dotenv
 import sqlite3
 import os
