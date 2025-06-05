@@ -5,28 +5,28 @@
       "use": "@vercel/python"
     }
   ],
-"routes": [
-  {
-    "src": "/docs",
-    "dest": "/api/index.py"
-  },
-  {
-    "src": "/openapi.json",
-    "dest": "/api/index.py"
-  },
-  {
-    "src": "/email/(.*)",
-    "dest": "/api/index.py"
-  },
-  {
-    "src": "/questions/(.*)",
-    "dest": "/api/index.py"
-  },
-  {
-    "src": "/(.*)",
-    "dest": "/api/index.py"
-  }
-],
+  "routes": [
+    {
+      "src": "/docs",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/openapi.json",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/email/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/questions/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.py"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
