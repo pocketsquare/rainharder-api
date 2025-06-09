@@ -119,3 +119,52 @@ async def get_piece(title: str):
 @app.get("/")
 async def root():
     return {"status": "API is running", "endpoints": ["/email/send", "/questions/{id}", "/piece/{title}"]}
+
+
+from fastapi import APIRouter
+import openai
+import anthropic
+import requests
+
+router = APIRouter()
+
+# ChatGPT Endpoint
+@router.post("/chatgpt/")
+async def chatgpt(prompt: str):
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+
+# Claude Endpoint
+@router.post("/claude/")
+async def claude(prompt: str):
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    completion = client.messages.create(
+        model="claude-3-haiku-20240307",
+        max_tokens=256,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return completion.content[0].text
+
+# Grok Endpoint (replace URL with actual API endpoint)
+@router.post("/grok/")
+async def grok(prompt: str):
+    response = requests.post(
+        'https://api.grok.example.com/v1/complete',
+        headers={"Authorization": f"Bearer {os.getenv('GROK_API_KEY')}"},
+        json={"prompt": prompt}
+    )
+    return response.json()
+
+# Mistral Endpoint (replace URL with actual API endpoint)
+@router.post("/mistral/")
+async def mistral(prompt: str):
+    response = requests.post(
+        'https://api.mistral.example.com/v1/complete',
+        headers={"Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}"},
+        json={"prompt": prompt}
+    )
+    return response.json()
