@@ -5,3 +5,6 @@ uvicorn==0.34.2
 python-dotenv
 databases
 aiosqlite
+openai
+anthropic
+requests
