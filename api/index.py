@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import resend
 import logging
 import os
+import sqlite3
 from mangum import Mangum
 from dotenv import load_dotenv
 from database import database
@@ -83,5 +84,89 @@ async def get_question(question_id: int):
         "left_entries": [dict(le) for le in left_entries],
         "right_entries": [dict(re) for re in right_entries],
     }
+
+# Piece endpoint
+@app.get("/piece/{title}")
+async def get_piece(title: str):
+    try:
+        conn = sqlite3.connect("mydb.sqlite")
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT p.id, p.title, c.text AS content, s.title AS style_category, 
+                   st.value AS style_value, b.css AS styling, a.name AS auteur
+            FROM piece p
+            LEFT JOIN content c ON c.piece_id = p.id
+            LEFT JOIN style s ON p.style_id = s.id
+            LEFT JOIN styles st ON s.id = st.style_id
+            LEFT JOIN beauty b ON p.beauty_id = b.id
+            LEFT JOIN auteur a ON p.auteur_id = a.id
+            WHERE p.title = ? AND p.deleted IS NULL
+        """, (title,))
+        row = cursor.fetchone()
+        conn.close()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Piece not found")
+
+        columns = [desc[0] for desc in cursor.description]
+        result = dict(zip(columns, row))
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Health check endpoint
+@app.get("/")
+async def root():
+    return {"status": "API is running", "endpoints": ["/email/send", "/questions/{id}", "/piece/{title}"]}
+
+
+from fastapi import APIRouter
+import openai
+import anthropic
+import requests
+
+router = APIRouter()
+
+# ChatGPT Endpoint
+@router.post("/chatgpt/")
+async def chatgpt(prompt: str):
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+
+# Claude Endpoint
+@router.post("/claude/")
+async def claude(prompt: str):
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    completion = client.messages.create(
+        model="claude-3-haiku-20240307",
+        max_tokens=256,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return completion.content[0].text
+
+# Grok Endpoint (replace URL with actual API endpoint)
+@router.post("/grok/")
+async def grok(prompt: str):
+    response = requests.post(
+        'https://api.grok.example.com/v1/complete',
+        headers={"Authorization": f"Bearer {os.getenv('GROK_API_KEY')}"},
+        json={"prompt": prompt}
+    )
+    return response.json()
+
+# Mistral Endpoint (replace URL with actual API endpoint)
+@router.post("/mistral/")
+async def mistral(prompt: str):
+    response = requests.post(
+        'https://api.mistral.example.com/v1/complete',
+        headers={"Authorization": f"Bearer {os.getenv('MISTRAL_API_KEY')}"},
+        json={"prompt": prompt}
+    )
+    return response.json()
 
 handler = Mangum(app)
