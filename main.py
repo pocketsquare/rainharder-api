@@ -1,5 +1,5 @@
 # main.py - Entry point
-from api import app
+from api.index import app
 
 # This is where you'd add any startup logic, 
 # background tasks, or other orchestration later
